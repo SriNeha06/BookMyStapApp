@@ -1,23 +1,23 @@
 # Book My Stay - Hotel Booking Management System
 
-## Use Case 2: Basic Room Types & Static Availability
+## Use Case 3: Centralized Room Inventory Management
 
 ### 📌 Overview
-This use case introduces object-oriented design using abstraction and inheritance.  
-Different room types are modeled as classes, and their availability is displayed.
+This use case introduces a centralized inventory system using a HashMap.  
+It replaces scattered variables with a single source of truth for managing room availability.
 
 ---
 
 ## 🎯 Goal
-- Model room types using abstract class and inheritance
-- Display room details and availability
-- Separate room definition from availability state
+- Centralize room availability
+- Use HashMap for efficient storage and retrieval
+- Encapsulate inventory logic in a dedicated class
 
 ---
 
 ## 🛠 Technologies Used
 - Core Java
-- Object-Oriented Programming (OOP)
+- HashMap (java.util)
 
 ---
 
@@ -25,4 +25,4 @@ Different room types are modeled as classes, and their availability is displayed
 
 ### Step 1: Compile
 ```bash
-javac UseCase2RoomInitialization.java
+javac UseCase3InventorySetup.java
