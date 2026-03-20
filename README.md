@@ -1,23 +1,23 @@
 # Book My Stay - Hotel Booking Management System
 
-## Use Case 3: Centralized Room Inventory Management
+## Use Case 4: Room Search & Availability Check
 
 ### 📌 Overview
-This use case introduces a centralized inventory system using a HashMap.  
-It replaces scattered variables with a single source of truth for managing room availability.
+This use case introduces a read-only search feature that allows users to view available rooms without modifying system data.
 
 ---
 
 ## 🎯 Goal
-- Centralize room availability
-- Use HashMap for efficient storage and retrieval
-- Encapsulate inventory logic in a dedicated class
+- Display only available rooms
+- Ensure inventory is not modified during search
+- Separate search logic from booking logic
 
 ---
 
 ## 🛠 Technologies Used
 - Core Java
-- HashMap (java.util)
+- ArrayList
+- HashMap
 
 ---
 
@@ -25,4 +25,4 @@ It replaces scattered variables with a single source of truth for managing room 
 
 ### Step 1: Compile
 ```bash
-javac UseCase3InventorySetup.java
+javac UseCase4RoomSearch.java
