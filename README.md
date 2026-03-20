@@ -1,23 +1,24 @@
 # Book My Stay - Hotel Booking Management System
 
-## Use Case 4: Room Search & Availability Check
+## Use Case 5: Booking Request (First-Come-First-Served)
 
 ### 📌 Overview
-This use case introduces a read-only search feature that allows users to view available rooms without modifying system data.
+This use case introduces a booking request queue to handle multiple booking requests in a fair and ordered manner.
 
 ---
 
 ## 🎯 Goal
-- Display only available rooms
-- Ensure inventory is not modified during search
-- Separate search logic from booking logic
+- Accept booking requests from users
+- Store them in a queue
+- Maintain arrival order (FIFO)
+- Prepare for future allocation processing
 
 ---
 
 ## 🛠 Technologies Used
 - Core Java
-- ArrayList
-- HashMap
+- Queue Interface
+- LinkedList (Queue implementation)
 
 ---
 
@@ -25,4 +26,4 @@ This use case introduces a read-only search feature that allows users to view av
 
 ### Step 1: Compile
 ```bash
-javac UseCase4RoomSearch.java
+javac UseCase5BookingRequestQueue.java
