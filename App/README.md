@@ -1,31 +1,34 @@
-Project: Use Case 8 - Booking History & Reporting
+Project: Use Case 9 - Error Handling & Validation
 
 Description:
-This program demonstrates a simple Hotel Booking History and Reporting system using Core Java. It stores confirmed reservations in memory and generates reports based on stored data.
+This program demonstrates validation and error handling in a Hotel Booking System using Core Java. It ensures invalid inputs are detected early and handled gracefully without affecting system stability.
 
 Compilation:
-javac UseCase8BookingHistoryReport.java
+javac UseCase9ErrorHandlingValidation.java
 
 Execution:
-java UseCase8BookingHistoryReport
+java UseCase9ErrorHandlingValidation
 
 Features:
-- Stores confirmed bookings in insertion order
-- Retrieves booking history without modification
-- Generates detailed booking list
-- Generates summary report with total bookings and revenue
+- Validates customer input
+- Validates room types
+- Prevents overbooking
+- Uses custom exceptions for clear error handling
+- Ensures system continues after failures
 
 Components:
-- Reservation: Represents a booking
-- BookingHistory: Stores all reservations
-- BookingReportService: Generates reports
+- InvalidBookingException: Custom exception for booking errors
+- RoomInventory: Manages room availability and validation
+- BookingService: Handles booking logic with validation
 
 Sample Output:
-All Bookings:
-BookingID: B001, Name: Alice, Room: Deluxe, Nights: 2, Total: 6000.0
-BookingID: B002, Name: Bob, Room: Suite, Nights: 3, Total: 15000.0
-BookingID: B003, Name: Charlie, Room: Standard, Nights: 1, Total: 1500.0
+Booking successful for Alice in Deluxe
+Booking failed: Customer name cannot be empty
+Booking failed: Invalid room type: Premium
+Booking successful for Charlie in Suite
+Booking failed: No rooms available for type: Suite
 
-Summary Report:
-Total Bookings: 3
-Total Revenue: 22500.0
+Current Inventory:
+Standard Available: 2
+Deluxe Available: 1
+Suite Available: 0
