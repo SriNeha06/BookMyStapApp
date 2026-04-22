@@ -1,35 +1,46 @@
-Project: Use Case 11 - Concurrent Booking Simulation
+Project: Use Case 12 - Data Persistence & System Recovery
 
 Description:
-This program simulates concurrent booking requests using multiple threads. It ensures thread-safe access to shared resources like booking queue and room inventory.
+This program demonstrates saving and restoring application state using file-based persistence in Java. It ensures booking and inventory data survive application restarts.
 
 Compilation:
-javac UseCase11ConcurrentBookingSimulation.java
+javac UseCase12DataPersistenceRecovery.java
 
 Execution:
-java UseCase11ConcurrentBookingSimulation
+java UseCase12DataPersistenceRecovery
 
 Features:
-- Simulates multiple users booking simultaneously
-- Uses shared queue for booking requests
-- Synchronizes inventory updates to prevent race conditions
-- Prevents double booking
-- Maintains consistent system state
+- Serializes booking history and inventory to file
+- Restores system state on restart
+- Handles missing or corrupted files gracefully
+- Maintains continuity across executions
 
 Components:
-- BookingRequest: Represents a booking request
-- BookingQueue: Shared request queue
-- RoomInventory: Shared inventory with synchronized access
-- BookingProcessor: Multi-threaded booking handler
+- Reservation: Booking entity (Serializable)
+- RoomInventory: Manages room data
+- BookingHistory: Stores reservations
+- SystemState: Wrapper for full system snapshot
+- PersistenceService: Handles save/load operations
 
-Sample Output:
-Thread-0 booked Deluxe for Alice
-Thread-1 booked Deluxe for Bob
-Thread-2 failed booking for Charlie
-Thread-0 booked Suite for David
-Thread-1 failed booking for Eve
+Behavior:
+- On first run, system starts fresh
+- On subsequent runs, previous state is restored
+- New bookings are added and persisted again
 
-Final Inventory:
+Sample Output (First Run):
+No previous state found, starting fresh
+
+Current Bookings:
+B001 - Alice - Deluxe
+B002 - Bob - Suite
+
+Current Inventory:
 Standard Available: 2
-Deluxe Available: 0
+Deluxe Available: 1
 Suite Available: 0
+
+State saved successfully
+
+Sample Output (Second Run):
+State loaded successfully
+...
