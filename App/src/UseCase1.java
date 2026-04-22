@@ -1,37 +1,20 @@
 import java.util.*;
 
-class Reservation {
-    private String bookingId;
+class BookingRequest {
     private String customerName;
     private String roomType;
-    private boolean active;
 
-    public Reservation(String bookingId, String customerName, String roomType) {
-        this.bookingId = bookingId;
+    public BookingRequest(String customerName, String roomType) {
         this.customerName = customerName;
         this.roomType = roomType;
-        this.active = true;
     }
 
-    public String getBookingId() {
-        return bookingId;
+    public String getCustomerName() {
+        return customerName;
     }
 
     public String getRoomType() {
         return roomType;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void cancel() {
-        this.active = false;
-    }
-
-    @Override
-    public String toString() {
-        return bookingId + " - " + customerName + " - " + roomType + " - " + (active ? "CONFIRMED" : "CANCELLED");
     }
 }
 
@@ -44,109 +27,90 @@ class RoomInventory {
         rooms.put("Suite", 1);
     }
 
-    public boolean isAvailable(String roomType) {
-        return rooms.containsKey(roomType) && rooms.get(roomType) > 0;
+    public synchronized boolean allocate(String roomType) {
+        if (!rooms.containsKey(roomType)) return false;
+        int available = rooms.get(roomType);
+        if (available <= 0) return false;
+        rooms.put(roomType, available - 1);
+        return true;
     }
 
-    public void allocate(String roomType) {
-        rooms.put(roomType, rooms.get(roomType) - 1);
-    }
-
-    public void release(String roomType) {
-        rooms.put(roomType, rooms.get(roomType) + 1);
-    }
-
-    public void printInventory() {
+    public synchronized void printInventory() {
         for (String type : rooms.keySet()) {
             System.out.println(type + " Available: " + rooms.get(type));
         }
     }
 }
 
-class BookingHistory {
-    private Map<String, Reservation> bookings = new HashMap<>();
+class BookingQueue {
+    private Queue<BookingRequest> queue = new LinkedList<>();
 
-    public void add(Reservation r) {
-        bookings.put(r.getBookingId(), r);
+    public synchronized void addRequest(BookingRequest request) {
+        queue.add(request);
     }
 
-    public Reservation get(String bookingId) {
-        return bookings.get(bookingId);
-    }
-
-    public Collection<Reservation> getAll() {
-        return bookings.values();
+    public synchronized BookingRequest getRequest() {
+        return queue.poll();
     }
 }
 
-class CancellationService {
+class BookingProcessor extends Thread {
+    private BookingQueue queue;
     private RoomInventory inventory;
-    private BookingHistory history;
-    private Stack<String> rollbackStack = new Stack<>();
 
-    public CancellationService(RoomInventory inventory, BookingHistory history) {
+    public BookingProcessor(BookingQueue queue, RoomInventory inventory) {
+        this.queue = queue;
         this.inventory = inventory;
-        this.history = history;
     }
 
-    public void cancelBooking(String bookingId) {
-        Reservation r = history.get(bookingId);
+    public void run() {
+        while (true) {
+            BookingRequest request;
+            synchronized (queue) {
+                request = queue.getRequest();
+            }
 
-        if (r == null) {
-            System.out.println("Cancellation failed: Booking not found");
-            return;
+            if (request == null) break;
+
+            boolean success = inventory.allocate(request.getRoomType());
+
+            if (success) {
+                System.out.println(Thread.currentThread().getName() + " booked " + request.getRoomType() + " for " + request.getCustomerName());
+            } else {
+                System.out.println(Thread.currentThread().getName() + " failed booking for " + request.getCustomerName());
+            }
         }
-
-        if (!r.isActive()) {
-            System.out.println("Cancellation failed: Booking already cancelled");
-            return;
-        }
-
-        rollbackStack.push(r.getBookingId());
-        inventory.release(r.getRoomType());
-        r.cancel();
-
-        System.out.println("Booking cancelled: " + bookingId);
-    }
-
-    public void printRollbackStack() {
-        System.out.println("Rollback Stack: " + rollbackStack);
     }
 }
 
-public class UseCase10Booking{
+public class UseCase11Concurrent {
     public static void main(String[] args) {
+        BookingQueue queue = new BookingQueue();
         RoomInventory inventory = new RoomInventory();
-        BookingHistory history = new BookingHistory();
 
-        Reservation r1 = new Reservation("B001", "Alice", "Deluxe");
-        Reservation r2 = new Reservation("B002", "Bob", "Suite");
+        queue.addRequest(new BookingRequest("Alice", "Deluxe"));
+        queue.addRequest(new BookingRequest("Bob", "Deluxe"));
+        queue.addRequest(new BookingRequest("Charlie", "Deluxe"));
+        queue.addRequest(new BookingRequest("David", "Suite"));
+        queue.addRequest(new BookingRequest("Eve", "Suite"));
 
-        if (inventory.isAvailable(r1.getRoomType())) {
-            inventory.allocate(r1.getRoomType());
-            history.add(r1);
+        Thread t1 = new BookingProcessor(queue, inventory);
+        Thread t2 = new BookingProcessor(queue, inventory);
+        Thread t3 = new BookingProcessor(queue, inventory);
+
+        t1.start();
+        t2.start();
+        t3.start();
+
+        try {
+            t1.join();
+            t2.join();
+            t3.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
-        if (inventory.isAvailable(r2.getRoomType())) {
-            inventory.allocate(r2.getRoomType());
-            history.add(r2);
-        }
-
-        CancellationService cancelService = new CancellationService(inventory, history);
-
-        cancelService.cancelBooking("B001");
-        cancelService.cancelBooking("B003");
-        cancelService.cancelBooking("B001");
-
-        System.out.println("\nCurrent Inventory:");
+        System.out.println("\nFinal Inventory:");
         inventory.printInventory();
-
-        System.out.println("\nBooking History:");
-        for (Reservation r : history.getAll()) {
-            System.out.println(r);
-        }
-
-        System.out.println();
-        cancelService.printRollbackStack();
     }
 }

@@ -1,39 +1,35 @@
-Project: Use Case 10 - Booking Cancellation & Inventory Rollback
+Project: Use Case 11 - Concurrent Booking Simulation
 
 Description:
-This program demonstrates booking cancellation with safe rollback using Core Java. It ensures inventory consistency by reversing previous booking operations.
+This program simulates concurrent booking requests using multiple threads. It ensures thread-safe access to shared resources like booking queue and room inventory.
 
 Compilation:
-javac UseCase10BookingCancellation.java
+javac UseCase11ConcurrentBookingSimulation.java
 
 Execution:
-java UseCase10BookingCancellation
+java UseCase11ConcurrentBookingSimulation
 
 Features:
-- Cancels only valid and active bookings
-- Restores room inventory after cancellation
-- Prevents duplicate or invalid cancellations
-- Uses stack for rollback tracking (LIFO behavior)
+- Simulates multiple users booking simultaneously
+- Uses shared queue for booking requests
+- Synchronizes inventory updates to prevent race conditions
+- Prevents double booking
 - Maintains consistent system state
 
 Components:
-- Reservation: Represents booking state
-- RoomInventory: Manages room availability
-- BookingHistory: Stores bookings
-- CancellationService: Handles cancellation and rollback logic
+- BookingRequest: Represents a booking request
+- BookingQueue: Shared request queue
+- RoomInventory: Shared inventory with synchronized access
+- BookingProcessor: Multi-threaded booking handler
 
 Sample Output:
-Booking cancelled: B001
-Cancellation failed: Booking not found
-Cancellation failed: Booking already cancelled
+Thread-0 booked Deluxe for Alice
+Thread-1 booked Deluxe for Bob
+Thread-2 failed booking for Charlie
+Thread-0 booked Suite for David
+Thread-1 failed booking for Eve
 
-Current Inventory:
+Final Inventory:
 Standard Available: 2
-Deluxe Available: 2
+Deluxe Available: 0
 Suite Available: 0
-
-Booking History:
-B001 - Alice - Deluxe - CANCELLED
-B002 - Bob - Suite - CONFIRMED
-
-Rollback Stack: [B001]
